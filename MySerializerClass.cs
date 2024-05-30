@@ -2,31 +2,31 @@
 using System;
 using System.IO;
 
-public abstract class MySerializeFormat
+public abstract class MySerializeFormat<T>
 {
-    public abstract void Serialize(object obj, string filePath);
-    public abstract object Deserialize(string filePath, Type type);
+    public abstract void Serialize(T obj, string filePath);
+    public abstract T Deserialize(string filePath);
 }
 
-public class JsonSerializeFormat : MySerializeFormat
+public class JsonSerializeFormat<T> : MySerializeFormat<T>
 {
-    public override void Serialize(object obj, string filePath)
+    public override void Serialize(T obj, string filePath)
     {
         JsonSerializerSettings settings = new JsonSerializerSettings
         {
-            TypeNameHandling = TypeNameHandling.All // Включить информацию о типах
+            TypeNameHandling = TypeNameHandling.All 
         };
         string json = JsonConvert.SerializeObject(obj, Formatting.Indented, settings);
         File.WriteAllText(filePath, json);
     }
 
-    public override object Deserialize(string filePath, Type type)
+    public override T Deserialize(string filePath)
     {
         string json = File.ReadAllText(filePath);
         JsonSerializerSettings settings = new JsonSerializerSettings
         {
-            TypeNameHandling = TypeNameHandling.All // Использовать информацию о типах при десериализации
+            TypeNameHandling = TypeNameHandling.All 
         };
-        return JsonConvert.DeserializeObject(json, type, settings);
+        return JsonConvert.DeserializeObject<T>(json, settings);
     }
 }
